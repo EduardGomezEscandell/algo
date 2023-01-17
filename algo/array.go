@@ -29,6 +29,15 @@ func Foreach[T any](arr []T, f func(*T)) {
 	}
 }
 
+// Fill generates an array of length len, where arr[i] = t.
+func Fill[T any](len int, t T) []T {
+	arr := make([]T, 0, len)
+	for i := 0; i < len; i++ {
+		arr = append(arr, t)
+	}
+	return arr
+}
+
 // Generate generates an array of length len, where arr[i] = f()
 // The function will be called in sequential order.
 func Generate[T any](len int, f func() T) []T {
@@ -114,7 +123,7 @@ func ZipWith[L, R, O any](first []L, second []R, f func(L, R) O) []O {
 //
 // Example: compute the inner product (u, v):
 //
-//	ZipReduce(u, v, func.Mul, func.Add)
+//	ZipReduce(u, v, utils.Mul, utils.Add, 0)
 func ZipReduce[L, R, M, O any](
 	first []L,
 	second []R,
