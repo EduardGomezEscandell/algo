@@ -3,7 +3,7 @@
 This repository contains various classical algorithms and data structures. They are all kept generic so you can
 use them directly in your project.
 
-[![Code quality](https://github.com/EduardGomezEscandell/algo/workflows/Test/badge.svg)](https://github.com/EduardGomezEscandell/algo/actions/workflows/test.yaml?query=workflow%3Atest)
+[![Code quality](https://github.com/EduardGomezEscandell/algo/actions/workflows/test.yaml/badge.svg)](https://github.com/EduardGomezEscandell/algo/actions/workflows/test.yaml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/EduardGomezEscandell/algo.svg)](https://pkg.go.dev/github.com/EduardGomezEscandell/algo)
 [![Go Report Card](https://goreportcard.com/badge/EduardGomezEscandell/algo)](https://goreportcard.com/report/EduardGomezEscandell/algo)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/EduardGomezEscandell/algo/blob/main/LICENSE)
