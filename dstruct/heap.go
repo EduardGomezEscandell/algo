@@ -39,7 +39,7 @@ func (h *Heap[T]) Push(t T) {
 // Pop removes and returns the minimum element (according to Less) from the heap.
 // The complexity is O(log n) where n = h.Len().
 // Pop is equivalent to Remove(h, 0).
-func (h *Heap[T]) Pop(t T) T {
+func (h *Heap[T]) Pop() T {
 	return heap.Pop(h.impl).(T) //nolint: forcetypeassert
 }
 
