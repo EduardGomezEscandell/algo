@@ -18,7 +18,7 @@ type LruCache[K comparable, V any] struct {
 	epoch    lruEpoch                      // A timestamp. Updated every read and write.
 }
 
-// New creates new lru cache with the specified capacity,
+// NewLRU creates new lru cache with the specified capacity,
 // measured in number of key-value paires stored.
 func NewLRU[K comparable, V any](cap int) *LruCache[K, V] {
 	return &LruCache[K, V]{
@@ -60,7 +60,7 @@ func (lru LruCache[K, V]) Set(k K, v V) {
 	}
 	var ptr *lruEntry[K, V]
 	if lru.Len() >= lru.capacity {
-		ptr = heap.Pop(lru.byAge).(*lruEntry[K, V]) // nolint: forcetypeassert
+		ptr = heap.Pop(lru.byAge).(*lruEntry[K, V]) //nolint: forcetypeassert
 		delete(lru.byKey, ptr.key)
 	} else {
 		ptr = &lru.data[lru.Len()]
