@@ -17,7 +17,7 @@ type Heap[T any] struct {
 func NewHeap[T any](best utils.Comparator[T]) Heap[T] {
 	return HeapFromSlice([]T{}, best)
 }
-
+	
 // HeapFromSlice creates and initializes a heap from a given slice.
 func HeapFromSlice[T any](src []T, best utils.Comparator[T]) Heap[T] {
 	h := Heap[T]{
