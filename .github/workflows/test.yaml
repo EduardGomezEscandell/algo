@@ -40,4 +40,4 @@ jobs:
           args: --config=.golangci-ci.yaml
       - name: Test
         run: |
-          go test ./...-race
+          go test ./... -race
