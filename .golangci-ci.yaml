@@ -1,0 +1,48 @@
+#! golangci-lint run -c .golangci-ci.yaml.
+
+linters:
+  enable:
+    - dupl
+    - durationcheck
+    - errname
+    - errorlint
+    - exportloopref
+    - forbidigo
+    - forcetypeassert
+    - godot
+    - gosec
+    - misspell
+    - nolintlint
+    - revive
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
+    - whitespace
+
+run:
+  timeout: 5m
+
+issues:
+  exclude-use-default: false
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude:
+    # EXC0001 errcheck: most errors are in defer calls, which are safe to ignore and idiomatic Go (would be good to only ignore defer ones though)
+    - 'Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*print(f|ln)?|os\.(Un)?Setenv|w\.Stop). is not checked'
+    # EXC0008 gosec: duplicated of errcheck
+    - (G104|G307)
+    # We don't wrap errors on purpose
+    - non-wrapping format verb for fmt.Errorf. Use `%w` to format errors
+    # revive: unexported-return for functions exported only in tests, aliasing doesn't work here as the linter always goes for the underlying model which is unexported
+    - 'unexported-return: exported func InitialModel(ForTests|WithPrevConfig)? returns unexported type watchdtui.model, which can be annoying to use'
+
+nolintlint:
+  require-explanation: true
+  require-specific: true
+
+linters-settings:
+  forbidigo:
+    forbid:
+      - ioutil\.
+      - ^print.*$
