@@ -3,6 +3,7 @@ package palgo
 
 import (
 	"github.com/EduardGomezEscandell/algo/algo"
+	"github.com/EduardGomezEscandell/algo/internal/inplace"
 	"github.com/EduardGomezEscandell/algo/utils"
 )
 
@@ -15,9 +16,7 @@ func Map[T, O any](arr []T, f func(T) O) []O {
 		return algo.Map(arr, f)
 	}
 	distribute(work, func(w workAlloc) {
-		for i := w.begin; i < w.end; i++ {
-			o[i] = f(arr[i])
-		}
+		inplace.Map(o[w.begin:w.end], arr[w.begin:w.end], f)
 	})
 
 	return o
@@ -43,9 +42,7 @@ func Fill[T any](n int, t T) []T {
 	}
 	o := make([]T, n)
 	distribute(work, func(w workAlloc) {
-		for it := w.begin; it != w.end; it++ {
-			o[it] = t
-		}
+		inplace.Fill(o[w.begin:w.end], t)
 	})
 	return o
 }
@@ -114,9 +111,7 @@ func ZipWith[L, R, O any](first []L, second []R, f func(L, R) O) []O {
 
 	o := make([]O, ln)
 	distribute(work, func(w workAlloc) {
-		for i := w.begin; i < w.end; i++ {
-			o[i] = f(first[i], second[i])
-		}
+		inplace.ZipWith(o[w.begin:w.end], first[w.begin:w.end], second[w.begin:w.end], f)
 	})
 	return o
 }
