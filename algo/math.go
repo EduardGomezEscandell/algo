@@ -55,5 +55,8 @@ func Count[T utils.Number](a T, b bool) T {
 // Clamp returns value x if it is inside the range [lo, hi], otherwise
 // returning the range boundary it is closest to.
 func Clamp[T utils.Number](lo, x, hi T) T {
+	if lo > hi {
+		panic("lo must be less or equal to hi")
+	}
 	return utils.Max(lo, utils.Min(x, hi))
 }

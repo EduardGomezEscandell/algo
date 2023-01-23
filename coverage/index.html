@@ -1,0 +1,1232 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>algo: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/EduardGomezEscandell/algo/algo/array.go (71.7%)</option>
+				
+				<option value="file1">github.com/EduardGomezEscandell/algo/algo/math.go (95.0%)</option>
+				
+				<option value="file2">github.com/EduardGomezEscandell/algo/dstruct/heap.go (0.0%)</option>
+				
+				<option value="file3">github.com/EduardGomezEscandell/algo/dstruct/lru.go (0.0%)</option>
+				
+				<option value="file4">github.com/EduardGomezEscandell/algo/dstruct/stack.go (52.6%)</option>
+				
+				<option value="file5">github.com/EduardGomezEscandell/algo/palgo/array.go (27.9%)</option>
+				
+				<option value="file6">github.com/EduardGomezEscandell/algo/palgo/work_alloc.go (100.0%)</option>
+				
+				<option value="file7">github.com/EduardGomezEscandell/algo/utils/functional.go (66.7%)</option>
+				
+				<option value="file8">github.com/EduardGomezEscandell/algo/utils/wrappers.go (66.7%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">// Package algo implements various classical algorithms.
+package algo
+
+import (
+        "fmt"
+        "sort"
+
+        "github.com/EduardGomezEscandell/algo/utils"
+)
+
+// Map applies function f:T-&gt;O element-wise to generate another
+// array []O of the same size.
+func Map[T, O any](arr []T, f func(T) O) []O <span class="cov8" title="1">{
+        if len(arr) &lt; 1 </span><span class="cov8" title="1">{
+                return []O{}
+        }</span>
+
+        <span class="cov8" title="1">o := make([]O, len(arr))
+        for i, a := range arr </span><span class="cov8" title="1">{
+                o[i] = f(a)
+        }</span>
+        <span class="cov8" title="1">return o</span>
+}
+
+// Foreach applies non-pure function f:T element-wise t modify the array.
+func Foreach[T any](arr []T, f func(*T)) <span class="cov0" title="0">{
+        for i := 0; i &lt; len(arr); i++ </span><span class="cov0" title="0">{
+                f(&amp;arr[i])
+        }</span>
+}
+
+// Fill generates an array of length len, where arr[i] = t.
+func Fill[T any](len int, t T) []T <span class="cov0" title="0">{
+        arr := make([]T, 0, len)
+        for i := 0; i &lt; len; i++ </span><span class="cov0" title="0">{
+                arr = append(arr, t)
+        }</span>
+        <span class="cov0" title="0">return arr</span>
+}
+
+// Generate generates an array of length len, where arr[i] = f()
+// The function will be called in sequential order.
+func Generate[T any](len int, f func() T) []T <span class="cov0" title="0">{
+        arr := make([]T, 0, len)
+        for i := 0; i &lt; len; i++ </span><span class="cov0" title="0">{
+                arr = append(arr, f())
+        }</span>
+        <span class="cov0" title="0">return arr</span>
+}
+
+// Generate2D generates a 2D array of lengths n x m, where arr[i][j] = f()
+// The function will be called in sequential order.
+func Generate2D[T any](n, m int, f func() T) [][]T <span class="cov0" title="0">{
+        return Generate(n, func() []T </span><span class="cov0" title="0">{ return Generate(m, f) }</span>)
+}
+
+// Generate3D generates a 3D array of lengths n x m x p, where arr[i][j][k] = f()
+// The function will be called in sequential order.
+func Generate3D[T any](n, m, p int, f func() T) [][][]T <span class="cov0" title="0">{
+        return Generate(n, func() [][]T </span><span class="cov0" title="0">{ return Generate2D(m, p, f) }</span>)
+}
+
+// Reduce []T-&gt;O applies the function fold:MxT-&gt;M cummulatively,
+// starting with the default value for M. The end result is
+// equivalent to:
+//
+//        fold(fold(...fold(0, arr[0]), ..., arr[n-2]), arr[n-1])
+//
+// where n is the length of arr
+//
+// Example use: Sum the values
+//
+//        Reduce(arr, func(x,y int)int { return x+y }) # Option 1.
+//        Reduce(arr, Add[int])                    # Option 2.
+func Reduce[T, O any](arr []T, fold func(O, T) O, init O) O <span class="cov8" title="1">{
+        o := init
+        for _, a := range arr </span><span class="cov8" title="1">{
+                o = fold(o, a)
+        }</span>
+        <span class="cov8" title="1">return o</span>
+}
+
+// MapReduce maps with the unary operator T-&gt;M, producing an
+// intermediate array []M that is then reduced with fold:
+// OxM-&gt;O.
+//
+// Equivalent to:
+//
+//        Reduce(Map(arr, unary), fold)
+//
+// Note: the intermediate array is not stored in memory.
+func MapReduce[T, O, M any](arr []T, unary func(T) M, fold func(O, M) O, init O) O <span class="cov8" title="1">{
+        o := init
+        for _, a := range arr </span><span class="cov8" title="1">{
+                o = fold(o, unary(a))
+        }</span>
+        <span class="cov8" title="1">return o</span>
+}
+
+// ZipWith takes two arrays of type []L and []R, and applies zip:LxR-&gt;O
+// elementwise to produce an array of type []O and length equal to the
+// length of the shortest input.
+func ZipWith[L, R, O any](first []L, second []R, f func(L, R) O) []O <span class="cov8" title="1">{
+        ln := utils.Min(len(first), len(second))
+
+        o := make([]O, ln)
+        for i := 0; i &lt; ln; i++ </span><span class="cov8" title="1">{
+                o[i] = f(first[i], second[i])
+        }</span>
+        <span class="cov8" title="1">return o</span>
+}
+
+// ZipReduce takes two arrays of type []L and []R, and applies zip:LxR-&gt;M
+// elementwise to produce an intermediate array of type []M and length
+// equal to the length of the shortest input. This array is then reduced
+// with fold expression fold:OxM-&gt;O with initial value 'init'.
+//
+// Equivalent to:
+//
+//        Reduce(ZipWith(first, second, zip), fold)
+//
+// Note: the intermediate array is not stored in memory.
+//
+// Example: compute the inner product (u, v):
+//
+//        ZipReduce(u, v, utils.Mul, utils.Add, 0)
+func ZipReduce[L, R, M, O any](
+        first []L,
+        second []R,
+        zip func(L, R) M,
+        fold func(O, M) O,
+        init O,
+) O <span class="cov8" title="1">{
+        ln := utils.Min(len(first), len(second))
+
+        for i := 0; i &lt; ln; i++ </span><span class="cov8" title="1">{
+                init = fold(init, zip(first[i], second[i]))
+        }</span>
+        <span class="cov8" title="1">return init</span>
+}
+
+// AdjacentMap slides a window of size 2 across the array arr applying operator 'f'
+// to produce an array of size len(arr)-1.
+func AdjacentMap[T, M any](arr []T, f func(T, T) M) []M <span class="cov8" title="1">{
+        if len(arr) &lt; 1 </span><span class="cov8" title="1">{
+                return []M{}
+        }</span>
+        <span class="cov8" title="1">return ZipWith(arr, arr[1:], f)</span>
+}
+
+// AdjacentReduce slides a window of size 2 across the array arr applying operator 'zip',
+// producing an intermediate array of size len(arr)-1. This array is then reduced with the
+// fold operator.
+//
+// Equivalent to:
+//
+//        Reduce(AdjacentMap(arr, zip), fold)
+//
+// Note: the intermediate array is not stored in memory.
+func AdjacentReduce[T, A, I any](arr []T, zip func(T, T) I, fold func(A, I) A) A <span class="cov8" title="1">{
+        var acc A
+        if len(arr) &lt; 2 </span><span class="cov8" title="1">{
+                return acc
+        }</span>
+
+        <span class="cov8" title="1">for i := 1; i &lt; len(arr); i++ </span><span class="cov8" title="1">{
+                acc = fold(acc, zip(arr[i-1], arr[i]))
+        }</span>
+        <span class="cov8" title="1">return acc</span>
+}
+
+// First scans the array and tries to find the first entry according to
+// the total ordering defined by the comparator.
+//
+// Example use: return the maximum value in the list
+//
+//        First(arr, func(x, y int) bool { return x&gt;y })
+//
+// Complexity is O(|arr|).
+func First[T any](arr []T, comp utils.Comparator[T]) (acc T) <span class="cov0" title="0">{
+        if len(arr) == 0 </span><span class="cov0" title="0">{
+                return acc
+        }</span>
+
+        <span class="cov0" title="0">acc = arr[0]
+        for _, v := range arr[1:] </span><span class="cov0" title="0">{
+                if comp(v, acc) </span><span class="cov0" title="0">{
+                        acc = v
+                }</span>
+        }
+
+        <span class="cov0" title="0">return acc</span>
+}
+
+// FirstN returns the first N entries in the array arr according to
+// the total ordering defined by the comparator.
+//
+//        Anticommutativity: isBetter(x,y) = !isBetter(y,x)
+//        Total ordering:    isBetter(x,y), isBetter(y,z) &lt;=&gt; isBetter(x, z).
+//
+// Example use: return the 3 largest values in the list
+//
+//        FirstN(arr, 3, func(x, y int) bool { return x&gt;y })
+//
+// Complexity is O(n·|arr|).
+func FirstN[T any](arr []T, n uint, comp utils.Comparator[T]) []T <span class="cov8" title="1">{
+        if uint(len(arr)) &lt;= n </span><span class="cov8" title="1">{
+                n = uint(len(arr))
+                acc := make([]T, n)
+                copy(acc, arr[:n])
+                Sort(acc, comp)
+                return acc
+        }</span>
+        <span class="cov8" title="1">acc := make([]T, n)
+        copy(acc, arr[:n])
+        Sort(acc, comp)
+
+        for _, a := range arr[n:] </span><span class="cov8" title="1">{
+                InsertSorted(n, acc, a, comp)
+        }</span>
+
+        <span class="cov8" title="1">return acc</span>
+}
+
+// InsertSorted takes a list arr sorted according to comp and emplaces
+// x in the position that keeps the list sorted. After this, the last
+// element is dropped from the list. Note that if x were to be last,
+// the emplace-then-drop step is optimized out.
+//
+// Complexity is O(n).
+func InsertSorted[T any](n uint, arr []T, x T, comp utils.Comparator[T]) <span class="cov8" title="1">{
+        if comp(arr[n-1], x) </span><span class="cov8" title="1">{ // Not top n
+                return
+        }</span>
+
+        <span class="cov8" title="1">i := int(n) - 1
+        for ; i &gt; 0; i-- </span><span class="cov8" title="1">{
+                if comp(arr[i-1], x) </span><span class="cov8" title="1">{
+                        arr[i] = x
+                        break</span>
+                }
+                <span class="cov8" title="1">arr[i] = arr[i-1]</span>
+        }
+        <span class="cov8" title="1">arr[i] = x</span>
+}
+
+// Sort sorts a list according to a comparator comp. Item i preceedes
+// item j &lt;=&gt; comp(i,j) is true.
+//
+// Example: sort from smallest to largest:
+//
+//        Sort(arr, func(l,r int) bool { return l&lt;r }) // Sorts incrementally
+//        Sort(arr, utils.Lt)                          // The same, but shorter
+//
+// Complexity is O(|arr|·log(|arr|)).
+func Sort[T any](arr []T, comp utils.Comparator[T]) <span class="cov8" title="1">{
+        sort.Slice(arr, func(i, j int) bool </span><span class="cov8" title="1">{
+                return comp(arr[i], arr[j])
+        }</span>)
+}
+
+// Intersect finds all elements that two slices have in common.
+//
+// The lists are expected to have been sorted with the comparator 'comp'.
+// Two items a,b are considered equivalent if both comp(a,b) and comp(b,a)
+// are false.
+//
+// It returns a slice with their common items. Items in the output list are
+// repeated as many times as the smallest number of repetitions between the
+// two lists.
+//
+// Complexity is O(|first| + |second|).
+func Intersect[T any](first, second []T, comp utils.Comparator[T]) []T <span class="cov8" title="1">{
+        common := []T{}
+        var f, s int
+        for f &lt; len(first) &amp;&amp; s &lt; len(second) </span><span class="cov8" title="1">{
+                // first[f] preceedes second[s]
+                if comp(first[f], second[s]) </span><span class="cov8" title="1">{
+                        f++
+                        continue</span>
+                }
+                // first[f] succeeds second[s]
+                <span class="cov8" title="1">if comp(second[s], first[f]) </span><span class="cov8" title="1">{
+                        s++
+                        continue</span>
+                }
+                // first[f] == second[s]
+                <span class="cov8" title="1">common = append(common, first[f])
+                f++
+                s++</span>
+        }
+        <span class="cov8" title="1">return common</span>
+}
+
+// Unique modifies array arr so that all unique items are moved to the
+// beginning. Returns the index where the new end is.
+func Unique[T any](arr []T, equal utils.Comparator[T]) (endUnique int) <span class="cov8" title="1">{
+        if len(arr) == 0 </span><span class="cov8" title="1">{
+                return 0
+        }</span>
+
+        <span class="cov8" title="1">endUnique = 1
+        for i := 1; i &lt; len(arr); i++ </span><span class="cov8" title="1">{
+                if equal(arr[i], arr[endUnique-1]) </span><span class="cov8" title="1">{
+                        continue</span>
+                }
+                <span class="cov8" title="1">if i != endUnique </span><span class="cov8" title="1">{
+                        arr[endUnique], arr[i] = arr[i], arr[endUnique] // Swap
+                }</span>
+                <span class="cov8" title="1">endUnique++</span>
+        }
+
+        <span class="cov8" title="1">return endUnique</span>
+}
+
+// Reverse returns a a copy of the original slice with its elements in opposite order.
+func Reverse[T any](arr []T) []T <span class="cov0" title="0">{
+        out := make([]T, 0, len(arr))
+        for j := len(arr) - 1; j &gt;= 0; j-- </span><span class="cov0" title="0">{
+                out = append(out, arr[j])
+        }</span>
+        <span class="cov0" title="0">return out</span>
+}
+
+// Stride takes one value every n of them, stores it in the output array and drops the rest.
+func Stride[T any](in []T, n int) []T <span class="cov0" title="0">{
+        out := make([]T, 0, len(in)/3)
+        for i := 0; i &lt; len(in); i += n </span><span class="cov0" title="0">{
+                out = append(out, in[i])
+        }</span>
+        <span class="cov0" title="0">return out</span>
+}
+
+// Find traverses array arr searching for an element that matches val
+// according to comparator eq and returs its index. If none match,
+// -1 is returned.
+func Find[T any](arr []T, val T, eq utils.Comparator[T]) int <span class="cov8" title="1">{
+        for i, v := range arr </span><span class="cov8" title="1">{
+                if eq(v, val) </span><span class="cov8" title="1">{
+                        return i
+                }</span>
+        }
+        <span class="cov8" title="1">return -1</span>
+}
+
+// FindIf traverses array arr searching for an element that makes
+// f return true, and returs its index. If none match, -1 is returned.
+func FindIf[T any](arr []T, pred utils.Predicate[T]) int <span class="cov0" title="0">{
+        for i, v := range arr </span><span class="cov0" title="0">{
+                if pred(v) </span><span class="cov0" title="0">{
+                        return i
+                }</span>
+        }
+        <span class="cov0" title="0">return -1</span>
+}
+
+// Partition rearranges a list such that
+//
+//        pred(arr[i]) is true &lt;=&gt; i &lt; j
+//
+// and returns this value j. If the entire list fulfils the predicate,
+// j will be equal to the length.
+//
+// Example: partition smaller than 3:
+//
+//                j := Partition(arr, func(x int) bool { return l&lt;3 })
+//
+//         arr -&gt; [numbers, less, than 3, numbers, greater, than 3]
+//                                        ^
+//                                        j
+//
+// Complexity is O(|arr|).
+func Partition[T any](slice []T, predicate func(t T) bool) (p int) <span class="cov8" title="1">{
+        if len(slice) == 0 </span><span class="cov8" title="1">{
+                return 0
+        }</span>
+        <span class="cov8" title="1">for i := range slice </span><span class="cov8" title="1">{
+                if !predicate(slice[i]) </span><span class="cov8" title="1">{
+                        continue</span>
+                }
+                <span class="cov8" title="1">if i == p </span><span class="cov8" title="1">{
+                        p++
+                        continue</span>
+                }
+                <span class="cov8" title="1">slice[i], slice[p] = slice[p], slice[i]
+                p++</span>
+        }
+        <span class="cov8" title="1">return p</span>
+}
+
+// Insert returns an array {arr[:position], value, arr[position:]}.
+// Original array becomes invalidated. Usage:
+//
+//        arr = Insert(arr, "hello", 5)
+func Insert[T any](arr []T, value T, position int) []T <span class="cov8" title="1">{
+        if position &lt; 0 || position &gt; len(arr) </span><span class="cov0" title="0">{
+                panic(fmt.Errorf("index %d out of range [0, %d)", position, len(arr)+1))</span>
+        }
+        <span class="cov8" title="1">var t T
+        arr = append(arr, t) // Dummy entry, will be overwritten
+        for i := len(arr) - 1; i &gt; position; i-- </span><span class="cov8" title="1">{
+                arr[i] = arr[i-1]
+        }</span>
+        <span class="cov8" title="1">arr[position] = value
+        return arr</span>
+}
+
+// Rotate rotates an array to the left when n&gt;0, and to the right
+// otherwise; such that all elements are shifted left/right by n
+// positions. Items that would be shifted out of the range are
+// shifted back in from the other side.
+//
+// Returns the position where the former first item is now located.
+func Rotate[T any](arr []T, n int) int <span class="cov8" title="1">{
+        if Abs(n) &gt;= len(arr) </span><span class="cov0" title="0">{
+                panic(fmt.Errorf("abs(n) must be less than the length of the array (n=%d, len=%d)", n, len(arr)))</span>
+        }
+        <span class="cov8" title="1">switch </span>{
+        case n &lt; 0:<span class="cov8" title="1">
+                return rotateRight(arr, uint(-n))</span>
+        case n &gt; 0:<span class="cov0" title="0">
+                return rotateLeft(arr, uint(n))</span>
+        case n == 0:<span class="cov0" title="0"></span>
+        }
+        <span class="cov0" title="0">return 0</span>
+}
+
+func rotateLeft[T any](arr []T, n uint) int <span class="cov0" title="0">{
+        aux := make([]T, n)
+        k := int(uint(len(arr)) - n)
+        copy(aux, arr[:n])
+        copy(arr[:k], arr[n:])
+        copy(arr[k:], aux)
+        return k
+}</span>
+
+func rotateRight[T any](arr []T, n uint) int <span class="cov8" title="1">{
+        k := int(uint(len(arr)) - n)
+        aux := make([]T, n)
+        copy(aux, arr[k:])
+        copy(arr[n:], arr[:k])
+        copy(arr[:n], aux)
+        return int(n)
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package algo
+
+import (
+        "github.com/EduardGomezEscandell/algo/utils"
+        "golang.org/x/exp/constraints"
+)
+
+// GCD computes the greatest common divisor (GCD) via Euclidean algorithm.
+func GCD[T constraints.Integer](a, b T) T <span class="cov8" title="1">{
+        for b != 0 </span><span class="cov8" title="1">{
+                t := b
+                b = a % b
+                a = t
+        }</span>
+        <span class="cov8" title="1">return a</span>
+}
+
+// LCM finds the Least Common Multiple (LCM) via GCD.
+func LCM[T constraints.Integer](a, b T, integers ...T) T <span class="cov8" title="1">{
+        result := a * b / GCD(a, b)
+
+        for i := 0; i &lt; len(integers); i++ </span><span class="cov8" title="1">{
+                result = LCM(result, integers[i])
+        }</span>
+
+        <span class="cov8" title="1">return result</span>
+}
+
+// Sign returns +1 or -1, with the same sign as `a`.
+// Returns 0 if a is 0.
+func Sign[T utils.Signed](a T) int <span class="cov8" title="1">{
+        switch </span>{
+        case a &gt; 0:<span class="cov8" title="1">
+                return 1</span>
+        case a &lt; 0:<span class="cov8" title="1">
+                return -1</span>
+        }
+        <span class="cov8" title="1">return 0</span>
+}
+
+// Abs returns the absolute value of a, i.e. a scalar
+// with the same magnitude and with positive sign.
+func Abs[T utils.Signed](a T) T <span class="cov8" title="1">{
+        return T(Sign(a)) * a
+}</span>
+
+// Count adds one to `a` iff `b` is true.
+func Count[T utils.Number](a T, b bool) T <span class="cov8" title="1">{
+        if b </span><span class="cov8" title="1">{
+                return a + 1
+        }</span>
+        <span class="cov8" title="1">return a</span>
+}
+
+// Clamp returns value x if it is inside the range [lo, hi], otherwise
+// returning the range boundary it is closest to.
+func Clamp[T utils.Number](lo, x, hi T) T <span class="cov8" title="1">{
+        if lo &gt; hi </span><span class="cov0" title="0">{
+                panic("lo must be less or equal to hi")</span>
+        }
+        <span class="cov8" title="1">return utils.Max(lo, utils.Min(x, hi))</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">// Package dstruct contains data stuctures.
+package dstruct
+
+import (
+        "container/heap"
+
+        "github.com/EduardGomezEscandell/algo/utils"
+)
+
+// Heap implemements a heap data structure
+// by wrapping around the standard library's heap.
+type Heap[T any] struct {
+        impl *heapImpl[T]
+}
+
+// NewHeap creates and initializes a heap.
+func NewHeap[T any](best utils.Comparator[T]) Heap[T] <span class="cov0" title="0">{
+        return HeapFromSlice([]T{}, best)
+}</span>
+        
+// HeapFromSlice creates and initializes a heap from a given slice.
+func HeapFromSlice[T any](src []T, best utils.Comparator[T]) Heap[T] <span class="cov0" title="0">{
+        h := Heap[T]{
+                &amp;heapImpl[T]{
+                        data: src,
+                        comp: best,
+                },
+        }
+        heap.Init(h.impl)
+        return h
+}</span>
+
+// Push pushes the element x onto the heap.
+// The complexity is O(log n) where n = h.Len().
+func (h *Heap[T]) Push(t T) <span class="cov0" title="0">{
+        heap.Push(h.impl, t)
+}</span>
+
+// Pop removes and returns the minimum element (according to Less) from the heap.
+// The complexity is O(log n) where n = h.Len().
+// Pop is equivalent to Remove(h, 0).
+func (h *Heap[T]) Pop() T <span class="cov0" title="0">{
+        return heap.Pop(h.impl).(T) //nolint: forcetypeassert
+}</span>
+
+// Len returns the size of the heap.
+func (h Heap[T]) Len() int <span class="cov0" title="0">{
+        return h.impl.Len()
+}</span>
+
+// Data returns a pointer to the internal data
+// Run Heap.Fix if you modify it in any way.
+func (h Heap[T]) Data() *[]T <span class="cov0" title="0">{
+        return &amp;h.impl.data
+}</span>
+
+// Remove removes and returns the element at index i from the heap.
+// The complexity is O(log n) where n = h.Len().
+func (h Heap[T]) Remove(i int) T <span class="cov0" title="0">{
+        return heap.Remove(h.impl, i).(T) //nolint: forcetypeassert
+}</span>
+
+// Fix re-establishes the heap ordering after the element at index i has changed its value.
+// Changing the value of the element at index i and then calling Fix is equivalent to,
+// but less expensive than, calling Remove(h, i) followed by a Push of the new value.
+// The complexity is O(log n) where n = h.Len().
+func (h Heap[T]) Fix(i int) <span class="cov0" title="0">{
+        heap.Fix(h.impl, i)
+}</span>
+
+// Repair establishes the heap invariants required by the other routines in this package.
+// Repair is idempotent with respect to the heap invariants
+// and may be called whenever the heap invariants may have been invalidated.
+// The complexity is O(n) where n = h.Len().
+func (h Heap[T]) Repair() <span class="cov0" title="0">{
+        heap.Init(h.impl)
+}</span>
+
+// implementation
+
+type heapImpl[T any] struct {
+        data []T
+        comp func(x, y T) bool
+}
+
+func (h heapImpl[T]) Len() int           <span class="cov0" title="0">{ return len(h.data) }</span>
+func (h heapImpl[T]) Less(i, j int) bool <span class="cov0" title="0">{ return h.comp(h.data[i], h.data[j]) }</span>
+func (h heapImpl[T]) Swap(i, j int)      <span class="cov0" title="0">{ h.data[i], h.data[j] = h.data[j], h.data[i] }</span>
+
+// Push emplaces the leading item. DO NOT USE!
+// Use heap.Push(h, x) instead.
+func (h *heapImpl[T]) Push(x any) <span class="cov0" title="0">{
+        h.data = append(h.data, x.(T)) //nolint: forcetypeassert
+        // We simply allow a panic ^.
+}</span>
+
+// Pop extracts the leading item. DO NOT USE!
+// Use heap.Pop(h).(T) instead.
+func (h *heapImpl[T]) Pop() any <span class="cov0" title="0">{
+        old := h.data
+        n := len(old)
+        x := old[n-1]
+        h.data = old[:n-1]
+        return x
+}</span>
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package dstruct
+
+// LruCache is a implements a Least Recently Used cache.
+// It acts as a dictionary of keys and values, with a maximum number of
+// entries. When this maximum is surpassed, the least recently used item
+// is dropped.
+type LruCache[K comparable, V any] struct {
+        byAge    Heap[*lruEntry[K, V]] // Heap to quickly acces items by age.
+        byKey    map[K]*lruEntry[K, V] // Map to quickly access to items by key.
+        data     []lruEntry[K, V]      // Raw data.
+        capacity int                   // Max amount of items.
+        epoch    lruEpoch              // A timestamp. Updated every read and write.
+}
+
+// NewLRU creates new lru cache with the specified capacity,
+// measured in number of key-value paires stored.
+func NewLRU[K comparable, V any](cap int) *LruCache[K, V] <span class="cov0" title="0">{
+        return &amp;LruCache[K, V]{
+                byKey:    map[K]*lruEntry[K, V]{},
+                byAge:    NewHeap(func(x, y *lruEntry[K, V]) bool </span><span class="cov0" title="0">{ return x.epoch &lt; y.epoch }</span>),
+                data:     make([]lruEntry[K, V], cap),
+                capacity: cap,
+                epoch:    1,
+        }
+}
+
+// Len is the number of stored items.
+func (lru LruCache[K, V]) Len() int <span class="cov0" title="0">{
+        return len(lru.byKey)
+}</span>
+
+// Get looks into the cache to see if the given key is
+// is registered. If so, the value is returned and its
+// epoch updated.
+func (lru *LruCache[K, V]) Get(key K) (v V, ok bool) <span class="cov0" title="0">{
+        entry, ok := lru.byKey[key]
+        if !ok </span><span class="cov0" title="0">{
+                return v, false
+        }</span>
+        <span class="cov0" title="0">lru.epoch++
+        entry.epoch = lru.epoch
+        return entry.data, true</span>
+}
+
+// Set checks if an entry was in the cache. If it was,
+// it updates its epoch. Otherwise, it adds it anew.
+func (lru LruCache[K, V]) Set(k K, v V) <span class="cov0" title="0">{
+        lru.epoch++
+        entry, ok := lru.byKey[k]
+        if ok </span><span class="cov0" title="0">{
+                entry.epoch = lru.epoch
+                return
+        }</span>
+        <span class="cov0" title="0">var ptr *lruEntry[K, V]
+        if lru.Len() &gt;= lru.capacity </span><span class="cov0" title="0">{
+                ptr = lru.byAge.Pop()
+                delete(lru.byKey, ptr.key)
+        }</span> else<span class="cov0" title="0"> {
+                ptr = &amp;lru.data[lru.Len()]
+        }</span>
+
+        <span class="cov0" title="0">ptr.epoch = lru.epoch
+        ptr.key = k
+        ptr.data = v
+
+        lru.byKey[k] = ptr
+        lru.byAge.Push(ptr)</span>
+}
+
+type lruEpoch uint64
+
+type lruEntry[K, V any] struct {
+        epoch lruEpoch
+        key   K
+        data  V
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">// Package dstruct implements various Data STRUCTures.
+package dstruct
+
+import (
+        "github.com/EduardGomezEscandell/algo/algo"
+)
+
+// Stack data structure. Implements a LIFO queue.
+type Stack[T any] struct {
+        data []T
+}
+
+// NewStack creates a new stack, with optional arguments
+// for initial size (with default initialization) and
+// initial capacity.
+func NewStack[T any](args ...int) Stack[T] <span class="cov8" title="1">{
+        var size, capacity int
+        switch len(args) </span>{
+        default:<span class="cov0" title="0">
+                panic("Only two args allowed: size and capacity")</span>
+        case 2:<span class="cov0" title="0">
+                capacity = args[1]
+                fallthrough</span>
+        case 1:<span class="cov0" title="0">
+                size = args[0]
+                fallthrough</span>
+        case 0:<span class="cov8" title="1">
+                return Stack[T]{data: make([]T, size, capacity)}</span>
+        }
+}
+
+// Size is the count of elements in the stack.
+func (s Stack[T]) Size() int <span class="cov8" title="1">{
+        return len(s.data)
+}</span>
+
+// IsEmpty indicates when the count of elements in the stack is zero.
+func (s Stack[T]) IsEmpty() bool <span class="cov8" title="1">{
+        return s.Size() == 0
+}</span>
+
+// Peek reveals a copy of the item at the top of the stack.
+func (s Stack[T]) Peek() T <span class="cov0" title="0">{
+        if s.IsEmpty() </span><span class="cov0" title="0">{
+                panic("peeking into empty stack")</span>
+        }
+        <span class="cov0" title="0">return s.data[len(s.data)-1]</span>
+}
+
+// Pop removes an item to the top of the stack.
+func (s *Stack[T]) Pop() <span class="cov8" title="1">{
+        if s.IsEmpty() </span><span class="cov8" title="1">{
+                panic("peeking into empty stack")</span>
+        }
+        <span class="cov8" title="1">s.data = s.data[:len(s.data)-1]</span>
+}
+
+// Push inserts an item to the top of the stack.
+func (s *Stack[T]) Push(t T) <span class="cov8" title="1">{
+        s.data = append(s.data, t)
+}</span>
+
+// Data reveals the internal storage. The storage is
+// arranged from bottom to top of the stack.
+func (s *Stack[T]) Data() []T <span class="cov8" title="1">{
+        return s.data
+}</span>
+
+// Invert reverses the order of the items within the stack.
+func (s *Stack[T]) Invert() <span class="cov0" title="0">{
+        s.data = algo.Reverse(s.data)
+}</span>
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">// Package palgo implements parallel versions various classical algorithms.
+package palgo
+
+import (
+        "github.com/EduardGomezEscandell/algo/algo"
+        "github.com/EduardGomezEscandell/algo/utils"
+)
+
+// Map applies function f:T-&gt;O element-wise to generate another
+// array []O of the same size.
+func Map[T, O any](arr []T, f func(T) O) []O <span class="cov8" title="1">{
+        o := make([]O, len(arr))
+        work := workAllocation(len(arr))
+        if len(work) &lt; 2 </span><span class="cov8" title="1">{
+                return algo.Map(arr, f)
+        }</span>
+        <span class="cov8" title="1">distribute(work, func(w workAlloc) </span><span class="cov8" title="1">{
+                for i := w.begin; i &lt; w.end; i++ </span><span class="cov8" title="1">{
+                        o[i] = f(arr[i])
+                }</span>
+        })
+
+        <span class="cov8" title="1">return o</span>
+}
+
+// Foreach applies non-pure function f:T element-wise t modify the array.
+func Foreach[T any](arr []T, f func(*T)) <span class="cov0" title="0">{
+        work := workAllocation(len(arr))
+        if len(work) &lt; 2 </span><span class="cov0" title="0">{
+                algo.Foreach(arr, f)
+                return
+        }</span>
+        <span class="cov0" title="0">distribute(work, func(w workAlloc) </span><span class="cov0" title="0">{
+                algo.Foreach(arr[w.begin:w.end], f)
+        }</span>)
+}
+
+// Fill generates an array of length len, where arr[i] = t.
+func Fill[T any](n int, t T) []T <span class="cov0" title="0">{
+        work := workAllocation(n)
+        if len(work) &lt; 2 </span><span class="cov0" title="0">{
+                return algo.Fill(n, t)
+        }</span>
+        <span class="cov0" title="0">o := make([]T, n)
+        distribute(work, func(w workAlloc) </span><span class="cov0" title="0">{
+                for it := w.begin; it != w.end; it++ </span><span class="cov0" title="0">{
+                        o[it] = t
+                }</span>
+        })
+        <span class="cov0" title="0">return o</span>
+}
+
+// Reduce []T-&gt;O applies the function fold:TxT-&gt;T cummulatively,
+// starting with the initial value init. The end result is
+// equivalent to:
+//
+//        fold(fold(...fold(0, arr[0]), ..., arr[n-2]), arr[n-1])
+//
+// where n is the length of arr.
+// The fold must be associative.
+//
+// Example use: Sum the values
+//
+//        Reduce(arr, func(x,y int)int { return x+y }) # Option 1.
+//        Reduce(arr, Add[int])                        # Option 2.
+func Reduce[T any](arr []T, fold func(T, T) T, init T) T <span class="cov8" title="1">{
+        work := workAllocation(len(arr))
+        if len(work) &lt; 2 </span><span class="cov8" title="1">{
+                return algo.Reduce(arr, fold, init)
+        }</span>
+
+        <span class="cov8" title="1">o := make([]T, len(work))
+        distribute(work, func(w workAlloc) </span><span class="cov8" title="1">{
+                init := fold(arr[w.begin], arr[w.begin+1])
+                w.begin += 2
+                o[w.worker] = algo.Reduce(arr[w.begin:w.end], fold, init)
+        }</span>)
+        <span class="cov8" title="1">return algo.Reduce(o, fold, init)</span>
+}
+
+// MapReduce maps with the unary operator unary:T-&gt;O, producing an
+// intermediate array []O that is then reduced with an associative
+// fold:OxO-&gt;O.
+//
+// Equivalent to:
+//
+//        Reduce(Map(arr, unary), fold)
+//
+// Note: the intermediate array is not stored in memory.
+func MapReduce[T, O any](arr []T, unary func(T) O, fold func(O, O) O, init O) O <span class="cov0" title="0">{
+        work := workAllocation(len(arr))
+        if len(work) &lt; 2 </span><span class="cov0" title="0">{
+                return algo.MapReduce(arr, unary, fold, init)
+        }</span>
+
+        <span class="cov0" title="0">o := make([]O, len(work))
+        distribute(work, func(w workAlloc) </span><span class="cov0" title="0">{
+                init := fold(unary(arr[w.begin]), unary(arr[w.begin+1]))
+                w.begin += 2
+                o[w.worker] = algo.MapReduce(arr[w.begin:w.end], unary, fold, init)
+        }</span>)
+        <span class="cov0" title="0">return algo.Reduce(o, fold, init)</span>
+}
+
+// ZipWith takes two arrays of type []L and []R, and applies zip:LxR-&gt;O
+// elementwise to produce an array of type []O and length equal to the
+// length of the shortest input.
+func ZipWith[L, R, O any](first []L, second []R, f func(L, R) O) []O <span class="cov0" title="0">{
+        ln := utils.Min(len(first), len(second))
+        work := workAllocation(ln)
+        if len(work) &lt; 2 </span><span class="cov0" title="0">{
+                return algo.ZipWith(first, second, f)
+        }</span>
+
+        <span class="cov0" title="0">o := make([]O, ln)
+        distribute(work, func(w workAlloc) </span><span class="cov0" title="0">{
+                for i := w.begin; i &lt; w.end; i++ </span><span class="cov0" title="0">{
+                        o[i] = f(first[i], second[i])
+                }</span>
+        })
+        <span class="cov0" title="0">return o</span>
+}
+
+// ZipReduce takes two arrays of type []L and []R, and applies zip:LxR-&gt;M
+// elementwise to produce an intermediate array of type []O and length
+// equal to the length of the shortest input. This array is then reduced
+// with fold expression fold:OxO-&gt;O with initial value 'init'.
+//
+// Equivalent to:
+//
+//        Reduce(ZipWith(first, second, zip), fold)
+//
+// Note: the intermediate array is not stored in memory.
+//
+// Example: compute the inner product (u, v):
+//
+//        ZipReduce(u, v, utils.Mul, utils.Add, 0)
+func ZipReduce[L, R, O any](
+        first []L,
+        second []R,
+        zip func(L, R) O,
+        fold func(O, O) O,
+        init O,
+) O <span class="cov0" title="0">{
+        ln := utils.Min(len(first), len(second))
+        work := workAllocation(ln)
+        if len(work) &lt; 2 </span><span class="cov0" title="0">{
+                return algo.ZipReduce(first, second, zip, fold, init)
+        }</span>
+
+        <span class="cov0" title="0">o := make([]O, len(work))
+        distribute(work, func(w workAlloc) </span><span class="cov0" title="0">{
+                a := zip(first[w.begin], second[w.begin])
+                w.begin++
+                b := zip(first[w.begin], second[w.begin])
+                w.begin++
+                o[w.worker] = algo.ZipReduce(first[w.begin:w.end], second[w.begin:w.end], zip, fold, fold(a, b))
+        }</span>)
+
+        <span class="cov0" title="0">return algo.Reduce(o, fold, init)</span>
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package palgo
+
+import (
+        "runtime"
+        "sync"
+
+        "github.com/EduardGomezEscandell/algo/utils"
+)
+
+// minWork is amount of work per worker. Some algorithms require
+// at least two items per worker, so this cannot be pushed below 2.
+const minWork = 3
+
+// workAlloc represents the work to be done
+// by a single worker.
+type workAlloc struct {
+        worker, begin, end int
+}
+
+func (r workAlloc) len() int <span class="cov8" title="1">{
+        return r.end - r.begin
+}</span>
+
+func roundUpDiv(x, n int) int <span class="cov8" title="1">{
+        return (x + n - 1) / n
+}</span>
+
+func workAllocation(workload int) []workAlloc <span class="cov8" title="1">{
+        if workload &lt; minWork </span><span class="cov8" title="1">{
+                return []workAlloc{{
+                        begin: 0,
+                        end:   workload,
+                }}
+        }</span>
+
+        <span class="cov8" title="1">chunkSize := utils.Max(minWork, roundUpDiv(workload, runtime.NumCPU()))
+        nWorkers := roundUpDiv(workload, chunkSize)
+
+        r := make([]workAlloc, nWorkers)
+        for i := 0; i &lt; nWorkers; i++ </span><span class="cov8" title="1">{
+                r[i] = workAlloc{
+                        worker: i,
+                        begin:  i * chunkSize,
+                        end:    (i + 1) * chunkSize,
+                }
+        }</span>
+
+        <span class="cov8" title="1">r[len(r)-1].end = utils.Min(r[len(r)-1].end, workload)
+        lastChunkSize := r[len(r)-1].len()
+        if lastChunkSize &lt; minWork </span><span class="cov8" title="1">{
+                r[len(r)-2].end += lastChunkSize
+                r = r[:len(r)-1]
+        }</span>
+
+        <span class="cov8" title="1">return r</span>
+}
+
+func distribute(work []workAlloc, f func(workAlloc)) <span class="cov8" title="1">{
+        var wg sync.WaitGroup
+        for _, chunk := range work </span><span class="cov8" title="1">{
+                wg.Add(1)
+                chunk := chunk
+                go func() </span><span class="cov8" title="1">{
+                        defer wg.Done()
+                        f(chunk)
+                }</span>()
+        }
+
+        <span class="cov8" title="1">wg.Wait()</span>
+}
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">// Package utils has various utils used by algo and dstruct.
+package utils
+
+type (
+        // Comparator is a function that returns a boolean based on two inputs.
+        // It should be stateless, and allow for a total ordering of elements in
+        // T such that a precedes b if, and only if, Comparator(a,b)==true.
+        // Functions that require a comparator input will assume as much.
+        Comparator[T any] func(a, b T) bool
+
+        // Predicate is a function that returns a boolean based on a single input.
+        // Furthermore, it should be stateless. Functions that require a predicate
+        // input will assume as much.
+        Predicate[T any] func(a T) bool
+)
+
+// Equal takes returns an equality check. Two items are considered equal
+// if their position is equivalent according to the ordering defined by
+// the comparator.
+func Equal[T any](comp Comparator[T]) Comparator[T] <span class="cov8" title="1">{
+        return func(a, b T) bool </span><span class="cov8" title="1">{
+                return !comp(a, b) &amp;&amp; !comp(b, a)
+        }</span>
+}
+
+// Identity does not mutate the object.
+func Identity[T any](a T) T <span class="cov0" title="0">{
+        return a
+}</span>
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">package utils
+
+// Add is a wrapper around the plus operator.
+func Add[T Number](a, b T) T <span class="cov8" title="1">{
+        return a + b
+}</span>
+
+// Sub is a wrapper around the minus operator.
+func Sub[T Number](a, b T) T <span class="cov8" title="1">{
+        return a - b
+}</span>
+
+// Mul is a wrapper around the product operator.
+func Mul[T Number](a, b T) T <span class="cov8" title="1">{
+        return a * b
+}</span>
+
+// Div is a wrapper around the division operator.
+// Unsafe from division by zero.
+func Div[T Number](a, b T) T <span class="cov0" title="0">{
+        return a / b
+}</span>
+
+// Min returns the minimum between two numbers.
+func Min[T Number](a, b T) T <span class="cov8" title="1">{
+        if a &lt;= b </span><span class="cov8" title="1">{
+                return a
+        }</span>
+        <span class="cov8" title="1">return b</span>
+}
+
+// Max returns the maximum between two numbers.
+func Max[T Number](a, b T) T <span class="cov8" title="1">{
+        if a &gt;= b </span><span class="cov8" title="1">{
+                return a
+        }</span>
+        <span class="cov8" title="1">return b</span>
+}
+
+// Gt is wrapper around the &gt; operator.
+func Gt[T Number](a, b T) bool <span class="cov8" title="1">{
+        return a &gt; b
+}</span>
+
+// Ge is wrapper around the &gt;= operator.
+func Ge[T Number](a, b T) bool <span class="cov0" title="0">{
+        return a &gt;= b
+}</span>
+
+// Eq is wrapper around the == operator.
+func Eq[T Number](a, b T) bool <span class="cov8" title="1">{
+        return a == b
+}</span>
+
+// Le is wrapper around the &lt;= operator.
+func Le[T Number](a, b T) bool <span class="cov0" title="0">{
+        return a &lt;= b
+}</span>
+
+// Lt is wrapper around the &lt; operator.
+func Lt[T Number](a, b T) bool <span class="cov8" title="1">{
+        return a &lt; b
+}</span>
+
+// And is the logical or.
+func And(a, b bool) bool <span class="cov0" title="0">{
+        return a &amp;&amp; b
+}</span>
+
+// Or is the logical or.
+func Or(a, b bool) bool <span class="cov0" title="0">{
+        return a || b
+}</span>
+
+// Append is a wrapper around the append built-in.
+func Append[T any](acc []T, t T) []T <span class="cov0" title="0">{
+        return append(acc, t)
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
