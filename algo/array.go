@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/EduardGomezEscandell/algo/internal/inplace"
 	"github.com/EduardGomezEscandell/algo/utils"
 )
 
@@ -16,9 +17,7 @@ func Map[T, O any](arr []T, f func(T) O) []O {
 	}
 
 	o := make([]O, len(arr))
-	for i, a := range arr {
-		o[i] = f(a)
-	}
+	inplace.Map(o, arr, f)
 	return o
 }
 
@@ -32,9 +31,7 @@ func Foreach[T any](arr []T, f func(*T)) {
 // Fill generates an array of length len, where arr[i] = t.
 func Fill[T any](len int, t T) []T {
 	arr := make([]T, 0, len)
-	for i := 0; i < len; i++ {
-		arr = append(arr, t)
-	}
+	inplace.Fill(arr, t)
 	return arr
 }
 
@@ -42,9 +39,7 @@ func Fill[T any](len int, t T) []T {
 // The function will be called in sequential order.
 func Generate[T any](len int, f func() T) []T {
 	arr := make([]T, 0, len)
-	for i := 0; i < len; i++ {
-		arr = append(arr, f())
-	}
+	inplace.Generate(arr, f)
 	return arr
 }
 
@@ -101,12 +96,8 @@ func MapReduce[T, O, M any](arr []T, unary func(T) M, fold func(O, M) O, init O)
 // elementwise to produce an array of type []O and length equal to the
 // length of the shortest input.
 func ZipWith[L, R, O any](first []L, second []R, f func(L, R) O) []O {
-	ln := utils.Min(len(first), len(second))
-
-	o := make([]O, ln)
-	for i := 0; i < ln; i++ {
-		o[i] = f(first[i], second[i])
-	}
+	o := make([]O, utils.Min(len(first), len(second)))
+	inplace.ZipWith(o, first, second, f)
 	return o
 }
 
@@ -145,7 +136,9 @@ func AdjacentMap[T, M any](arr []T, f func(T, T) M) []M {
 	if len(arr) < 1 {
 		return []M{}
 	}
-	return ZipWith(arr, arr[1:], f)
+	o := make([]M, len(arr)-1)
+	inplace.AdjacentMap(o, arr, f)
+	return o
 }
 
 // AdjacentReduce slides a window of size 2 across the array arr applying operator 'zip',
@@ -335,12 +328,7 @@ func Stride[T any](in []T, n int) []T {
 // according to comparator eq and returs its index. If none match,
 // -1 is returned.
 func Find[T any](arr []T, val T, eq utils.Comparator[T]) int {
-	for i, v := range arr {
-		if eq(v, val) {
-			return i
-		}
-	}
-	return -1
+	return FindIf(arr, func(t T) bool { return eq(t, val) })
 }
 
 // FindIf traverses array arr searching for an element that makes
