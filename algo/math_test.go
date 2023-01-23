@@ -73,7 +73,7 @@ func testAbs[T utils.Signed](t *testing.T) { //nolint: thelper
 	}
 }
 
-func testGCD[T constraints.Integer](t *testing.T) {
+func testGCD[T constraints.Integer](t *testing.T) { //nolint: thelper
 	t.Parallel()
 	testCases := map[string]struct {
 		input [2]T
@@ -97,7 +97,7 @@ func testGCD[T constraints.Integer](t *testing.T) {
 	}
 }
 
-func testLCM[T constraints.Integer](t *testing.T) {
+func testLCM[T constraints.Integer](t *testing.T) { //nolint: thelper
 	t.Parallel()
 	testCases := map[string]struct {
 		input []T
@@ -122,7 +122,7 @@ func testLCM[T constraints.Integer](t *testing.T) {
 	}
 }
 
-func testClamp[T constraints.Integer](t *testing.T) {
+func testClamp[T constraints.Integer](t *testing.T) { //nolint: thelper
 	t.Parallel()
 	testCases := map[string]struct {
 		input  T
@@ -147,6 +147,7 @@ func testClamp[T constraints.Integer](t *testing.T) {
 }
 
 func TestCount(t *testing.T) {
+	t.Parallel()
 	require.Equal(t, 2, algo.Count(1, true))
 	require.Equal(t, 1, algo.Count(1, false))
 }
