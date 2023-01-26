@@ -25,7 +25,7 @@ func roundUpDiv(x, n int) int {
 	return (x + n - 1) / n
 }
 
-func workAllocation(workload int) []workAlloc {
+func WorkAllocation(workload int) []workAlloc {
 	if workload < minWork {
 		return []workAlloc{{
 			begin: 0,
@@ -55,7 +55,7 @@ func workAllocation(workload int) []workAlloc {
 	return r
 }
 
-func distribute(work []workAlloc, f func(workAlloc)) {
+func Distribute(work []workAlloc, f func(workAlloc)) {
 	var wg sync.WaitGroup
 	for _, chunk := range work {
 		wg.Add(1)
