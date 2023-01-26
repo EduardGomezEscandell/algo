@@ -20,7 +20,7 @@ func Fill[T any](dst []T, t T) {
 // The function will be called in sequential order.
 func Generate[T any](dst []T, f func() T) []T {
 	for i := 0; i < len(dst); i++ {
-		dst = append(dst, f())
+		dst[i] = f()
 	}
 	return dst
 }
