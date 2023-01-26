@@ -17,8 +17,8 @@ type WorkDistribution struct {
 func NewWorkDistribution(workload, minWorkload int) WorkDistribution {
 	if workload < minWorkload {
 		return WorkDistribution{Work: []WorkAlloc{{
-			begin: 0,
-			end:   workload,
+			Begin: 0,
+			End:   workload,
 		}}}
 	}
 
@@ -28,16 +28,16 @@ func NewWorkDistribution(workload, minWorkload int) WorkDistribution {
 	w := make([]WorkAlloc, nWorkers)
 	for i := 0; i < nWorkers; i++ {
 		w[i] = WorkAlloc{
-			worker: i,
-			begin:  i * chunkSize,
-			end:    (i + 1) * chunkSize,
+			WorkerID: i,
+			Begin:    i * chunkSize,
+			End:      (i + 1) * chunkSize,
 		}
 	}
 
-	w[len(w)-1].end = utils.Min(w[len(w)-1].end, workload)
+	w[len(w)-1].End = utils.Min(w[len(w)-1].End, workload)
 	lastChunkSize := w[len(w)-1].len()
 	if lastChunkSize < minWorkload {
-		w[len(w)-2].end += lastChunkSize
+		w[len(w)-2].End += lastChunkSize
 		w = w[:len(w)-1]
 	}
 
@@ -66,11 +66,11 @@ func (dist WorkDistribution) Run(f func(WorkAlloc)) {
 
 // WorkAlloc represents the work to be done by a single worker.
 type WorkAlloc struct {
-	worker, begin, end int
+	WorkerID, Begin, End int
 }
 
 func (a WorkAlloc) len() int {
-	return a.end - a.begin
+	return a.End - a.Begin
 }
 
 func roundUpDiv(x, n int) int {

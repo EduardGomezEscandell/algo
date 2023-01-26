@@ -16,7 +16,7 @@ func Map[T, O any](arr []T, f func(T) O) []O {
 		return algo.Map(arr, f)
 	}
 	alloc.Run(func(w WorkAlloc) {
-		inplace.Map(o[w.begin:w.end], arr[w.begin:w.end], f)
+		inplace.Map(o[w.Begin:w.End], arr[w.Begin:w.End], f)
 	})
 
 	return o
@@ -30,7 +30,7 @@ func Foreach[T any](arr []T, f func(*T)) {
 		return
 	}
 	dist.Run(func(w WorkAlloc) {
-		algo.Foreach(arr[w.begin:w.end], f)
+		algo.Foreach(arr[w.Begin:w.End], f)
 	})
 }
 
@@ -42,7 +42,7 @@ func Fill[T any](n int, t T) []T {
 	}
 	o := make([]T, n)
 	dist.Run(func(w WorkAlloc) {
-		inplace.Fill(o[w.begin:w.end], t)
+		inplace.Fill(o[w.Begin:w.End], t)
 	})
 	return o
 }
@@ -68,9 +68,9 @@ func Reduce[T any](arr []T, fold func(T, T) T, init T) T {
 
 	o := make([]T, dist.NWorkers())
 	dist.Run(func(w WorkAlloc) {
-		init := fold(arr[w.begin], arr[w.begin+1])
-		w.begin += 2
-		o[w.worker] = algo.Reduce(arr[w.begin:w.end], fold, init)
+		init := fold(arr[w.Begin], arr[w.Begin+1])
+		w.Begin += 2
+		o[w.WorkerID] = algo.Reduce(arr[w.Begin:w.End], fold, init)
 	})
 	return algo.Reduce(o, fold, init)
 }
@@ -92,9 +92,9 @@ func MapReduce[T, O any](arr []T, unary func(T) O, fold func(O, O) O, init O) O 
 
 	o := make([]O, dist.NWorkers())
 	dist.Run(func(w WorkAlloc) {
-		init := fold(unary(arr[w.begin]), unary(arr[w.begin+1]))
-		w.begin += 2
-		o[w.worker] = algo.MapReduce(arr[w.begin:w.end], unary, fold, init)
+		init := fold(unary(arr[w.Begin]), unary(arr[w.Begin+1]))
+		w.Begin += 2
+		o[w.WorkerID] = algo.MapReduce(arr[w.Begin:w.End], unary, fold, init)
 	})
 	return algo.Reduce(o, fold, init)
 }
@@ -111,7 +111,7 @@ func ZipWith[L, R, O any](first []L, second []R, f func(L, R) O) []O {
 
 	o := make([]O, ln)
 	dist.Run(func(w WorkAlloc) {
-		inplace.ZipWith(o[w.begin:w.end], first[w.begin:w.end], second[w.begin:w.end], f)
+		inplace.ZipWith(o[w.Begin:w.End], first[w.Begin:w.End], second[w.Begin:w.End], f)
 	})
 	return o
 }
@@ -145,11 +145,11 @@ func ZipReduce[L, R, O any](
 
 	o := make([]O, dist.NWorkers())
 	dist.Run(func(w WorkAlloc) {
-		a := zip(first[w.begin], second[w.begin])
-		w.begin++
-		b := zip(first[w.begin], second[w.begin])
-		w.begin++
-		o[w.worker] = algo.ZipReduce(first[w.begin:w.end], second[w.begin:w.end], zip, fold, fold(a, b))
+		a := zip(first[w.Begin], second[w.Begin])
+		w.Begin++
+		b := zip(first[w.Begin], second[w.Begin])
+		w.Begin++
+		o[w.WorkerID] = algo.ZipReduce(first[w.Begin:w.End], second[w.Begin:w.End], zip, fold, fold(a, b))
 	})
 
 	return algo.Reduce(o, fold, init)
