@@ -38,7 +38,7 @@ func Fill[T any](len int, t T) []T {
 // Generate generates an array of length len, where arr[i] = f()
 // The function will be called in sequential order.
 func Generate[T any](len int, f func() T) []T {
-	arr := make([]T, len, 0)
+	arr := make([]T, len)
 	inplace.Generate(arr, f)
 	return arr
 }
