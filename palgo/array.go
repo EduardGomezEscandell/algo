@@ -11,11 +11,11 @@ import (
 // array []O of the same size.
 func Map[T, O any](arr []T, f func(T) O) []O {
 	o := make([]O, len(arr))
-	work := WorkAllocation(len(arr))
-	if len(work) < 2 {
+	alloc := NewWorkDistribution(len(arr), 3)
+	if alloc.NWorkers() < 2 {
 		return algo.Map(arr, f)
 	}
-	Distribute(work, func(w workAlloc) {
+	alloc.Run(func(w WorkAlloc) {
 		inplace.Map(o[w.begin:w.end], arr[w.begin:w.end], f)
 	})
 
@@ -24,24 +24,24 @@ func Map[T, O any](arr []T, f func(T) O) []O {
 
 // Foreach applies non-pure function f:T element-wise t modify the array.
 func Foreach[T any](arr []T, f func(*T)) {
-	work := WorkAllocation(len(arr))
-	if len(work) < 2 {
+	dist := NewWorkDistribution(len(arr), 3)
+	if dist.NWorkers() < 2 {
 		algo.Foreach(arr, f)
 		return
 	}
-	Distribute(work, func(w workAlloc) {
+	dist.Run(func(w WorkAlloc) {
 		algo.Foreach(arr[w.begin:w.end], f)
 	})
 }
 
 // Fill generates an array of length len, where arr[i] = t.
 func Fill[T any](n int, t T) []T {
-	work := WorkAllocation(n)
-	if len(work) < 2 {
+	dist := NewWorkDistribution(n, 3)
+	if dist.NWorkers() < 2 {
 		return algo.Fill(n, t)
 	}
 	o := make([]T, n)
-	Distribute(work, func(w workAlloc) {
+	dist.Run(func(w WorkAlloc) {
 		inplace.Fill(o[w.begin:w.end], t)
 	})
 	return o
@@ -61,13 +61,13 @@ func Fill[T any](n int, t T) []T {
 //	Reduce(arr, func(x,y int)int { return x+y }) # Option 1.
 //	Reduce(arr, Add[int])                        # Option 2.
 func Reduce[T any](arr []T, fold func(T, T) T, init T) T {
-	work := WorkAllocation(len(arr))
-	if len(work) < 2 {
+	dist := NewWorkDistribution(len(arr), 3)
+	if dist.NWorkers() < 2 {
 		return algo.Reduce(arr, fold, init)
 	}
 
-	o := make([]T, len(work))
-	Distribute(work, func(w workAlloc) {
+	o := make([]T, dist.NWorkers())
+	dist.Run(func(w WorkAlloc) {
 		init := fold(arr[w.begin], arr[w.begin+1])
 		w.begin += 2
 		o[w.worker] = algo.Reduce(arr[w.begin:w.end], fold, init)
@@ -85,13 +85,13 @@ func Reduce[T any](arr []T, fold func(T, T) T, init T) T {
 //
 // Note: the intermediate array is not stored in memory.
 func MapReduce[T, O any](arr []T, unary func(T) O, fold func(O, O) O, init O) O {
-	work := WorkAllocation(len(arr))
-	if len(work) < 2 {
+	dist := NewWorkDistribution(len(arr), 3)
+	if dist.NWorkers() < 2 {
 		return algo.MapReduce(arr, unary, fold, init)
 	}
 
-	o := make([]O, len(work))
-	Distribute(work, func(w workAlloc) {
+	o := make([]O, dist.NWorkers())
+	dist.Run(func(w WorkAlloc) {
 		init := fold(unary(arr[w.begin]), unary(arr[w.begin+1]))
 		w.begin += 2
 		o[w.worker] = algo.MapReduce(arr[w.begin:w.end], unary, fold, init)
@@ -104,13 +104,13 @@ func MapReduce[T, O any](arr []T, unary func(T) O, fold func(O, O) O, init O) O 
 // length of the shortest input.
 func ZipWith[L, R, O any](first []L, second []R, f func(L, R) O) []O {
 	ln := utils.Min(len(first), len(second))
-	work := WorkAllocation(ln)
-	if len(work) < 2 {
+	dist := NewWorkDistribution(ln, 3)
+	if dist.NWorkers() < 2 {
 		return algo.ZipWith(first, second, f)
 	}
 
 	o := make([]O, ln)
-	Distribute(work, func(w workAlloc) {
+	dist.Run(func(w WorkAlloc) {
 		inplace.ZipWith(o[w.begin:w.end], first[w.begin:w.end], second[w.begin:w.end], f)
 	})
 	return o
@@ -138,13 +138,13 @@ func ZipReduce[L, R, O any](
 	init O,
 ) O {
 	ln := utils.Min(len(first), len(second))
-	work := WorkAllocation(ln)
-	if len(work) < 2 {
+	dist := NewWorkDistribution(ln, 3)
+	if dist.NWorkers() < 2 {
 		return algo.ZipReduce(first, second, zip, fold, init)
 	}
 
-	o := make([]O, len(work))
-	Distribute(work, func(w workAlloc) {
+	o := make([]O, dist.NWorkers())
+	dist.Run(func(w WorkAlloc) {
 		a := zip(first[w.begin], second[w.begin])
 		w.begin++
 		b := zip(first[w.begin], second[w.begin])

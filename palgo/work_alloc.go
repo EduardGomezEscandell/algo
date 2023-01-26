@@ -7,57 +7,52 @@ import (
 	"github.com/EduardGomezEscandell/algo/utils"
 )
 
-// minWork is amount of work per worker. Some algorithms require
-// at least two items per worker, so this cannot be pushed below 2.
-const minWork = 3
-
-// workAlloc represents the work to be done
-// by a single worker.
-type workAlloc struct {
-	worker, begin, end int
+// WorkDistribution is an struct containing information regarding workers.
+type WorkDistribution struct {
+	Work []WorkAlloc
 }
 
-func (r workAlloc) len() int {
-	return r.end - r.begin
-}
-
-func roundUpDiv(x, n int) int {
-	return (x + n - 1) / n
-}
-
-func WorkAllocation(workload int) []workAlloc {
-	if workload < minWork {
-		return []workAlloc{{
+// NewWorkDistribution takes a total workload and a minimum workload per worker
+// and distributes it along as many workers as possible, up to the number of cores.
+func NewWorkDistribution(workload, minWorkload int) WorkDistribution {
+	if workload < minWorkload {
+		return WorkDistribution{Work: []WorkAlloc{{
 			begin: 0,
 			end:   workload,
-		}}
+		}}}
 	}
 
-	chunkSize := utils.Max(minWork, roundUpDiv(workload, runtime.NumCPU()))
+	chunkSize := utils.Max(minWorkload, roundUpDiv(workload, runtime.NumCPU()))
 	nWorkers := roundUpDiv(workload, chunkSize)
 
-	r := make([]workAlloc, nWorkers)
+	w := make([]WorkAlloc, nWorkers)
 	for i := 0; i < nWorkers; i++ {
-		r[i] = workAlloc{
+		w[i] = WorkAlloc{
 			worker: i,
 			begin:  i * chunkSize,
 			end:    (i + 1) * chunkSize,
 		}
 	}
 
-	r[len(r)-1].end = utils.Min(r[len(r)-1].end, workload)
-	lastChunkSize := r[len(r)-1].len()
-	if lastChunkSize < minWork {
-		r[len(r)-2].end += lastChunkSize
-		r = r[:len(r)-1]
+	w[len(w)-1].end = utils.Min(w[len(w)-1].end, workload)
+	lastChunkSize := w[len(w)-1].len()
+	if lastChunkSize < minWorkload {
+		w[len(w)-2].end += lastChunkSize
+		w = w[:len(w)-1]
 	}
 
-	return r
+	return WorkDistribution{Work: w}
 }
 
-func Distribute(work []workAlloc, f func(workAlloc)) {
+// NWorkers is the count of goroutines this distribution will launch.
+func (dist WorkDistribution) NWorkers() int {
+	return len(dist.Work)
+}
+
+// Run executes one the function in each of its goroutines.
+func (dist WorkDistribution) Run(f func(WorkAlloc)) {
 	var wg sync.WaitGroup
-	for _, chunk := range work {
+	for _, chunk := range dist.Work {
 		wg.Add(1)
 		chunk := chunk
 		go func() {
@@ -67,4 +62,17 @@ func Distribute(work []workAlloc, f func(workAlloc)) {
 	}
 
 	wg.Wait()
+}
+
+// WorkAlloc represents the work to be done by a single worker.
+type WorkAlloc struct {
+	worker, begin, end int
+}
+
+func (a WorkAlloc) len() int {
+	return a.end - a.begin
+}
+
+func roundUpDiv(x, n int) int {
+	return (x + n - 1) / n
 }
